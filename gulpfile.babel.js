@@ -1,17 +1,25 @@
 import gulp  from 'gulp' // ES6 imports!
 import babel from 'gulp-babel'
+import mocha from 'gulp-mocha'
 
-const SOURCE_PATH = 'src/**/*.js'
+const SOURCES    = 'src/**/*.js'
+const TEST_FILES = 'test/**/*.js'
 
-gulp.task('watch', () => {
-  gulp.watch(SOURCE_PATH, ['compile'])
+gulp.task('test', () => {
+  return gulp.src(TEST_FILES, { read: false })
+             .pipe(mocha({ reporter: 'nyan' }))
 })
 
 gulp.task('compile', () => {
-  return gulp.src(SOURCE_PATH)
-    .pipe(babel())
-    .pipe(gulp.dest('dist'));
+  return gulp.src(SOURCES)
+             .pipe(babel())
+             .pipe(gulp.dest('dist'));
 })
  
-gulp.task('default', ['compile'])
+gulp.task('default', ['compile', 'test'])
+
+gulp.task('watch', (cb) => {
+  gulp.watch(SOURCES, ['compile', 'test'])
+      .on('end', cb)
+})
 
