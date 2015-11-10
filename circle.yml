@@ -1,0 +1,20 @@
+machine:
+  python:
+    version: 2.7.6
+  node:
+    version: 0.10.36
+
+dependencies:
+  pre:
+    - npm install -g gulp
+    - pip install -U awscli
+
+deployment:
+  staging:
+    branch: development
+    commands:
+      - gulp staging
+  production:
+    branch: master
+    commands:
+      - gulp production

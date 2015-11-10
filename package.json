@@ -9,15 +9,19 @@
     ]
   },
   "dependencies": {
-    "aws-sdk": "^2.2.15"
+    "aws-sdk": "^2.2.15",
+    "core-js": "^1.2.6"
   },
   "devDependencies": {
     "babel-core": "^6.1.2",
     "babel-preset-es2015": "^6.1.2",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.0",
+    "gulp-file": "^0.2.0",
     "gulp-mocha": "^2.1.3",
+    "mocha": "^2.3.3",
     "power-assert": "^1.1.0",
+    "run-sequence": "^1.1.4",
     "sinon": "^1.17.2"
   }
 }
