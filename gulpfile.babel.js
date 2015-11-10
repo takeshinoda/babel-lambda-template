@@ -6,7 +6,9 @@ const SOURCES    = 'src/**/*.js'
 const TEST_FILES = 'test/**/*.js'
 
 gulp.task('test', () => {
-  return gulp.src(TEST_FILES, { read: false })
+  return gulp.src(TEST_FILES)
+             .pipe(babel())
+             .pipe(gulp.dest('test_dist'))
              .pipe(mocha({ reporter: 'nyan' }))
 })
 

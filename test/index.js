@@ -1,7 +1,7 @@
 import mocha  from 'mocha'
 import sinon  from 'sinon'
 import assert from 'power-assert'
-import module from '../src/index.js'
+import module from '../dist/index.js'
 
 describe('index', () => {
   describe('endpoint', () => {
