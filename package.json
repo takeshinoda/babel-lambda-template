@@ -1,7 +1,7 @@
 {
-  "name": "log-sender",
+  "name": "lambda-babel-template",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "babel": {
     "presets": [
@@ -10,16 +10,20 @@
   },
   "dependencies": {
     "aws-sdk": "^2.2.15",
-    "core-js": "^1.2.6"
+    "babel-polyfill": "^6.1.4"
   },
   "devDependencies": {
-    "babel-core": "^6.1.2",
+    "babel-core": "^6.1.4",
     "babel-preset-es2015": "^6.1.2",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.0",
     "gulp-file": "^0.2.0",
+    "gulp-install": "^0.6.0",
     "gulp-mocha": "^2.1.3",
+    "gulp-util": "^3.0.7",
+    "gulp-zip": "^3.0.2",
     "mocha": "^2.3.3",
+    "node-aws-lambda": "^0.1.6",
     "power-assert": "^1.1.0",
     "run-sequence": "^1.1.4",
     "sinon": "^1.17.2"

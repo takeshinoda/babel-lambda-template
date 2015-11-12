@@ -1,24 +1,27 @@
 module.exports = {
-  lambda_settings: {
+  lambda_params: {
+    // https://github.com/ThoughtWorksStudios/node-aws-lambda
     default: {
       handler: 'index.handler',
+      description: 'sample',
       timeout: 60, // seconds
-      memorySize: 256 // MB
+      memorySize: 128, // MB
+      role: 'arn:aws:iam::.....' // arn
     },
     development: {
-      region: 'hogehoge',
+      region: 'ap-northeast-1',
       functionName: 'lambda-test-development',
     },
     test: {
-      region: 'hogehoge',
+      region: 'ap-northeast-1',
       functionName: 'lambda-test-test',
     },
     staging: {
-      region: 'us-west-2',
+      region: 'ap-northeast-1',
       functionName: 'lambda-test-staging',
     },
     production: {
-      region: 'us-west-2',
+      region: 'ap-northeast-1',
       functionName: 'lambda-test-production',
     },
   },
