@@ -1,13 +1,20 @@
-import gulp  from 'gulp'
-import babel from 'gulp-babel'
-import mocha from 'gulp-mocha'
-import file  from 'gulp-file'
+import gulp    from 'gulp'
+import gutil   from 'gulp-util'
+import babel   from 'gulp-babel'
+import mocha   from 'gulp-mocha'
+import file    from 'gulp-file'
+import zip     from 'gulp-zip'
+import install from 'gulp-install'
 import runSequence from 'run-sequence'
 
+import awsLambda   from 'node-aws-lambda'
+import aws         from 'aws-sdk'
+
 import configure from './build_src/configure'
+import settings  from './config/environment_settings'
 
 const SOURCES    = 'src/**/*.js'
-const TEST_FILES = 'test/**/*.js'
+const TEST_FILES = ['test/**/*.js', '!test/fixtures/*.js']
 
 gulp.task('test', () => {
   return gulp.src(TEST_FILES)
@@ -30,10 +37,63 @@ gulp.task('configure', () => {
          .pipe(gulp.dest('dist'))
 })
 
-gulp.task('default', (cb) => runSequence('compile', 'test', cb))
+gulp.task('install', () => {
+  return gulp.src('package.json')
+             .pipe(gulp.dest('dist'))
+             .pipe(install({ production: true }))
+})
+
+gulp.task('zip', () => {
+  return gulp.src(['dist/**/*'])
+             .pipe(zip('dist.zip'))
+             .pipe(gulp.dest('./'))
+})
+
+gulp.task('deploy', (done) => {
+  awsLambda.deploy('./dist.zip', require('./dist/config').lambda_params, done);
+})
+
+for (let env in settings.lambda_params) {
+  gulp.task(`deploy-${env}`, (done) => {
+    process.env.AP_ENV = env
+    runSequence(['compile', 'install'], 'test', 'zip', 'deploy', done)
+  })
+
+  gulp.task(`invoke-${env}`, (done) => {
+    let setting = Object.assign(settings.lambda_params.default, settings.lambda_params[env])
+    let lambda = new aws.Lambda({ region: setting.region })
+    let params = {
+      FunctionName: setting.functionName,
+      InvocationType: 'RequestResponse',
+      Payload: JSON.stringify(require('./test/fixtures/invoke_payload'))
+    }
+
+    lambda.invoke(params, (err, data) => {
+      if (err) {
+        gutil.log(err, err.stack)
+      }
+      else {
+        if (data.FunctionError) {
+          gutil.log(`Failed invocation ${params.FunctionName}`)
+          gutil.log(data.FunctionError)
+        }
+        else {
+          gutil.log(`Success invocation ${params.FunctionName}`)
+        }
+        gutil.log('Result:')
+        gutil.log(data.Payload)
+      }
+      done()
+    })
+  })
+}
+
+gulp.task('invoke', ['invoke-development'])
 
 gulp.task('watch', (done) => {
   gulp.watch(SOURCES, ['default'])
       .on('end', done)
 })
+
+gulp.task('default', (done) => runSequence('compile', 'test', done))
 

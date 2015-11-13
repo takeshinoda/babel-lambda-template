@@ -13,8 +13,9 @@ deployment:
   staging:
     branch: development
     commands:
-      - gulp staging
+      - gulp deploy-staging
   production:
     branch: master
     commands:
-      - gulp production
+      - gulp deploy-production
+
