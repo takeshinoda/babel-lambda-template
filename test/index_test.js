@@ -1,7 +1,7 @@
 import mocha  from 'mocha'
 import sinon  from 'sinon'
 import assert from 'power-assert'
-import module from '../dist/index.js'
+import { handler } from '../src/index'
 
 describe('index', () => {
   describe('endpoint', () => {
@@ -10,7 +10,7 @@ describe('index', () => {
       let mock = sinon.mock(context)
 
       mock.expects('succeed').withArgs('success').once()
-      module.handler('log', context)
+      handler('log', context)
 
       assert(mock.verify())
     })

@@ -1,11 +1,13 @@
 import 'babel-polyfill'
-import gulp    from 'gulp'
-import gutil   from 'gulp-util'
-import babel   from 'gulp-babel'
-import mocha   from 'gulp-mocha'
-import file    from 'gulp-file'
-import zip     from 'gulp-zip'
-import install from 'gulp-install'
+import gulp     from 'gulp'
+import gutil    from 'gulp-util'
+import babel    from 'gulp-babel'
+import mocha    from 'gulp-mocha'
+import istanbul from 'gulp-istanbul'
+import file     from 'gulp-file'
+import zip      from 'gulp-zip'
+import install  from 'gulp-install'
+
 import runSequence from 'run-sequence'
 
 import awsLambda   from 'node-aws-lambda'
@@ -15,13 +17,24 @@ import configure from './build_src/configure'
 import settings  from './config/environment_settings'
 
 const SOURCES    = 'src/**/*.js'
-const TEST_FILES = ['test/**/*.js', '!test/fixtures/*.js']
+const TEST_FILES = ['test/**/*_test.js', '!test/fixtures/*.js']
 
-gulp.task('test', () => {
+gulp.task('test', ['configure'], () => {
   return gulp.src(TEST_FILES)
-             .pipe(babel())
-             .pipe(gulp.dest('test_dist'))
              .pipe(mocha({ reporter: 'nyan' }))
+})
+
+gulp.task('pre-test-coverage', ['configure'], () => {
+  return gulp.src(SOURCES)
+             .pipe(istanbul( { instrumenter: require('isparta').Instrumenter }))
+             .pipe(istanbul.hookRequire());
+})
+
+gulp.task('test:coverage', ['pre-test-coverage'], () => {
+  return gulp.src(TEST_FILES)
+             .pipe(mocha({ reporter: 'nyan' }))
+             .pipe(istanbul.writeReports())
+             .pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }));
 })
 
 gulp.task('compile', ['configure'], () => {
@@ -35,7 +48,7 @@ gulp.task('configure', () => {
   let src = configure.build(env)
 
   return file('config.js', `module.exports = ${JSON.stringify(src)}\n`, { src: true })
-         .pipe(gulp.dest('dist'))
+         .pipe(gulp.dest('src'))
 })
 
 gulp.task('install', () => {
