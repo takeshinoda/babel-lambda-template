@@ -3,4 +3,6 @@ npm-debug.log*
 dist
 test_dist
 dist.zip
+coverage
+src/config.js
 
