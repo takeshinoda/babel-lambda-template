@@ -1,8 +1,8 @@
 
 import config from './config'
 
-export function handler(event, context) {
+export function handler(event, context, done) {
   console.log(event)
-  context.succeed('success')
+  done(null, 'success')
 }
 

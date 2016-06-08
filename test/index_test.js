@@ -5,14 +5,14 @@ import { handler } from '../src/index'
 
 describe('index', () => {
   describe('endpoint', () => {
-    it('call succeed.', () => {
-      let context = { succeed: (result) => {} }
-      let mock = sinon.mock(context)
+    it('call succeed.', (done) => {
+      let callback = (error, result) => {
+        assert(error == null)
+        assert(result == 'success')
+        done()
+      }
 
-      mock.expects('succeed').withArgs('success').once()
-      handler('log', context)
-
-      assert(mock.verify())
+      handler('log', { context: 'hoge' }, callback)
     })
   })
 })
